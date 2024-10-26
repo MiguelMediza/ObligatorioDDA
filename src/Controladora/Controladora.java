@@ -5,12 +5,8 @@
 
 package Controladora;
 
-import Dominio.Habitacion;
-import Dominio.Hotel;
-import Dominio.Huesped;
-import Persistencia.PEHotel;
-import Persistencia.PEHuesped;
-import Persistencia.PEHabitacion;
+import Dominio.*;
+import Persistencia.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -620,6 +616,187 @@ public class Controladora {
         }
     }
 
+
+    //Tarifa
+
+    public void agregarTarifa() {
+        System.out.println("AGREGAR TARIFA");
+
+        int monto;
+        do {
+            System.out.println("Ingrese el monto de la tarifa");
+            try {
+                monto = Integer.parseInt(escaner.nextLine().trim());
+            } catch (Exception e) {
+                monto = 0; // Valor por defecto si hay error
+            }
+        } while (monto == 0);
+
+        String fechaVigencia;
+        do {
+            System.out.println("Ingrese la fecha de vigencia");
+            fechaVigencia = escaner.nextLine().trim();
+        } while (fechaVigencia.isEmpty());
+
+
+        Tarifa nuevaTarifa = new Tarifa(monto, fechaVigencia);
+        if (PETarifa.agregarTarifa(nuevaTarifa)) {
+            System.out.println("Se agregó la tarifa con exito");
+        } else {
+            System.out.println("Hubo un problema para agregar");
+        }
+    }
+
+    public void eliminarTarifa() {
+        System.out.println("Eliminar Tarifa");
+        Tarifa t = this.buscarTarifa();
+        if (t == null) {
+            System.out.println("No se encontró la tarifa");
+        } else if (PETarifa.eliminarTarifa(t.getId())) {
+            System.out.println("La tarifa se eliminó con éxito");
+        } else {
+            System.out.println("La tarifa no se pudo eliminar");
+        }
+
+    }
+
+    public Tarifa buscarTarifa() {
+        int idTarifa;
+        do {
+            System.out.println("Ingrese el ID de la tarifa");
+
+            try {
+                idTarifa = Integer.parseInt(escaner.nextLine());
+            } catch (Exception var3) {
+                idTarifa = 0;
+            }
+        } while(idTarifa == 0);
+
+        return PETarifa.buscarTarifa(idTarifa);
+    }
+
+    public void listarTarifas() {
+        System.out.println("Listado de tarifas");
+        Iterator var1 = PETarifa.listarTarifas().iterator();
+
+        while(var1.hasNext()) {
+            Tarifa t = (Tarifa) var1.next();
+            System.out.println(t.toString());
+        }
+
+    }
+
+
+    //Reserva
+
+    public void agregarReserva() {
+        System.out.println("AGREGAR RESERVA");
+
+        int idResponsable;
+        Huesped responsable = null;
+        do {
+            System.out.println("Ingrese el id del Responsable de la reserva(Huesped)");
+            try {
+                idResponsable = Integer.parseInt(escaner.nextLine().trim());
+                responsable = PEHuesped.buscarHuesped(idResponsable);
+                if (responsable == null) {
+                    idResponsable = 0;
+                }
+
+            } catch (Exception e) {
+                idResponsable = 0; // Valor por defecto si hay error
+            }
+        } while (idResponsable == 0);
+
+        int idHabitacion;
+        Habitacion habitacion = null;
+        do {
+            System.out.println("Ingrese el ID de la habitacion");
+            try {
+                idHabitacion = Integer.parseInt(escaner.nextLine().trim());
+                habitacion = PEHabitacion.buscarHabitacion(idHabitacion);
+
+                if (habitacion == null) {
+                    idHabitacion = 0;
+                }
+            } catch (Exception e) {
+                idHabitacion = 0; // Valor por defecto si hay error
+            }
+
+        } while (idHabitacion == 0 );
+
+        int cantPersonas;
+        do {
+            System.out.println("Ingrese la cantidad de personas");
+
+            try {
+                cantPersonas = Integer.parseInt(escaner.nextLine().trim());
+            } catch (Exception var7) {
+                cantPersonas = 0;
+            }
+        } while(cantPersonas == 0);
+
+        String fechaReserva;
+        do {
+            System.out.println("Fecha de reserva");
+            fechaReserva = escaner.nextLine().trim();
+        } while (fechaReserva.isEmpty());
+
+        //Al crear la reserva se inicializa como sin pagar siempre
+        boolean pagado = false;
+
+        String observaciones;
+        do {
+            System.out.println("Observaciones");
+            observaciones = escaner.nextLine().trim();
+        } while (observaciones.isEmpty());
+
+        Reserva nuevaReserva = new Reserva(responsable, habitacion, cantPersonas, fechaReserva, pagado, observaciones);
+        if (PEReserva.agregarReserva(nuevaReserva)) {
+            System.out.println("Se agregó la reserva con exito");
+        } else {
+            System.out.println("Hubo un problema para agregar");
+        }
+    }
+
+    public void eliminarReserva() {
+        System.out.println("Eliminar Reserva");
+        Reserva r = this.buscarReserva();
+        if (r == null) {
+            System.out.println("No se encontró la reserva");
+        } else if (PEReserva.eliminarReserva(r.getIdReserva())) {
+            System.out.println("La reserva se eliminó con éxito");
+        } else {
+            System.out.println("La reserva no se pudo eliminar");
+        }
+
+    }
+
+    public Reserva buscarReserva() {
+        int idReserva;
+        do {
+            System.out.println("Ingrese el ID de la Reserva");
+
+            try {
+                idReserva = Integer.parseInt(escaner.nextLine());
+            } catch (Exception var3) {
+                idReserva = 0;
+            }
+        } while(idReserva == 0);
+
+        return PEReserva.buscarReserva(idReserva);
+    }
+
+    public void listarReservas() {
+        System.out.println("Listado de Reservas");
+        Iterator var1 = PEReserva.listarReservas().iterator();
+
+        while(var1.hasNext()) {
+            Reserva r = (Reserva) var1.next();
+            System.out.println(r.toString());
+        }
+
+    }
 
     static {
         escaner = new Scanner(System.in);

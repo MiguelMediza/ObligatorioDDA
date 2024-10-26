@@ -44,11 +44,10 @@ public class PEHabitacion {
             int idHotel = (Integer) registro.get(8);
 
             Habitacion unaHabitacion = new Habitacion(idHabitacion, capacidadCamas, camaMatrimonial, aireAcondicionado, balcon, vista, amenities, ocupada, idHotel);
-            System.out.println(unaHabitacion.toString());
             return unaHabitacion;
 
         } else {
-            System.out.println("No se encontro el habitacion");
+            System.out.println("No se encontro la habitacion");
             return null;
 
         }

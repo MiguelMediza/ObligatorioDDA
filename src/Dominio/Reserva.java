@@ -2,7 +2,7 @@ package Dominio;
 
 public class Reserva {
     private int idReserva;
-    private Huesped huesped;
+    private Huesped responsable;
     private Habitacion habitacion;
     private int cantidadPersonas;
     private String fechaReserva;
@@ -18,11 +18,11 @@ public class Reserva {
     }
 
     public Huesped getHuesped() {
-        return huesped;
+        return responsable;
     }
 
     public void setHuesped(Huesped huesped) {
-        this.huesped = huesped;
+        this.responsable = huesped;
     }
 
     public Habitacion getHabitacion() {
@@ -65,9 +65,18 @@ public class Reserva {
         this.observacion = observacion;
     }
 
-    public Reserva(int idReserva, Huesped huesped, Habitacion habitacion, int cantidadPersonas, String fechaReserva, boolean pagado, String observacion) {
+    public Reserva(int idReserva, Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, boolean pagado, String observacion) {
         this.idReserva = idReserva;
-        this.huesped = huesped;
+        this.responsable = responsable;
+        this.habitacion = habitacion;
+        this.cantidadPersonas = cantidadPersonas;
+        this.fechaReserva = fechaReserva;
+        this.pagado = pagado;
+        this.observacion = observacion;
+    }
+
+    public Reserva(Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, boolean pagado, String observacion) {
+        this.responsable = responsable;
         this.habitacion = habitacion;
         this.cantidadPersonas = cantidadPersonas;
         this.fechaReserva = fechaReserva;
@@ -79,7 +88,7 @@ public class Reserva {
     public String toString() {
         return "Reserva{" +
                 "idReserva='" + idReserva + '\'' +
-                ", huesped=" + huesped +
+                ", responsable=" + responsable +
                 ", habitacion=" + habitacion +
                 ", cantidadPersonas=" + cantidadPersonas +
                 ", fechaReserva='" + fechaReserva + '\'' +

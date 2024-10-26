@@ -65,6 +65,25 @@ public class Main {
                 case 13:
                     controladora.modificarHabitacion();
                     break;
+                case 14:
+                    controladora.agregarTarifa();
+                    break;
+                case 15:
+                    controladora.eliminarTarifa();
+                    break;
+                case 16:
+                    controladora.listarTarifas();
+                    break;
+                case 17:
+                    controladora.agregarReserva();
+                    break;
+                case 18:
+                    controladora.eliminarReserva();
+                    break;
+                case 19:
+                    controladora.listarReservas();
+                    break;
+
             }
         } while(opcion != -1);
 
@@ -85,6 +104,12 @@ public class Main {
         System.out.println("11. Eliminar Habitación");
         System.out.println("12. Listar Habitaciones");
         System.out.println("13. Modificar Habitación");
+        System.out.println("14. Agregar Tarifa");
+        System.out.println("15. Eliminar Tarifa");
+        System.out.println("16. Listar Tarifas");
+        System.out.println("17. Agregar Reserva");
+        System.out.println("18. Eliminar Reserva");
+        System.out.println("19. Listar Reservas");
 
     }
 

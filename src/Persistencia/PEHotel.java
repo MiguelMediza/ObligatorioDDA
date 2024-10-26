@@ -148,11 +148,10 @@ public class PEHotel {
 
             Hotel hotelActual = null;
 
-            // Procesar los resultados
             while (resultSet.next()) {
                 int currentHotelId = resultSet.getInt("idHotel");
 
-                // Si es un nuevo hotel, creamos el objeto Hotel
+
                 if (hotelActual == null || currentHotelId != hotelActual.getIdHotel()) {
                     hotelActual = new Hotel(
                             currentHotelId,
@@ -166,7 +165,7 @@ public class PEHotel {
                     listaHoteles.add(hotelActual);
                 }
 
-                // Agregar habitaciones a la lista correspondiente
+                
                 if (resultSet.getInt("idHabitacion") > 0) {
                     Habitacion habitacion = new Habitacion(
                             resultSet.getInt("idHabitacion"),

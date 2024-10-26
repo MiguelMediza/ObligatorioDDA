@@ -38,6 +38,7 @@ public class PEHuesped {
             Huesped unHuesped = new Huesped(idHuesped, nombre, aPaterno, aMaterno, tipoDocumento, numDocumento, fechaNacimiento, telefono, pais);
             return unHuesped;
         } else {
+            System.out.println("No se encontro el huesped");
             return null;
         }
     }
