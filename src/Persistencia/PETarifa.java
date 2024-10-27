@@ -20,7 +20,7 @@ public class PETarifa {
     }
 
     public static Tarifa buscarTarifa(int pidTarifa) {
-        String sql = "SELECT idTarifa, monto, fechaVigencia WHERE idTarifa=?";
+        String sql = "SELECT idTarifa, monto, fechaVigencia FROM tarifas WHERE idTarifa=?";
 
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(pidTarifa));
         Iterator var3 = conexion.seleccion(sql, parametros).iterator();
@@ -31,7 +31,7 @@ public class PETarifa {
             String fechaVigencia = String.valueOf(registro.get(2));
 
             Tarifa unaTarifa = new Tarifa(idTarifa, monto, fechaVigencia);
-            System.out.println(unaTarifa.toString());
+
             return unaTarifa;
 
         } else {

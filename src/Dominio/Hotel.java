@@ -123,8 +123,6 @@ public class Hotel {
                 ", cantidadEstrellas=" + cantidadEstrellas +
                 ", direccion='" + direccion + '\'' +
                 ", zona='" + zona + '\'' +
-                ", habitacionesDisponibles=" + habitacionesDisponibles +
-                ", habitacionesOcupadas=" + habitacionesOcupadas +
                 '}';
     }
 

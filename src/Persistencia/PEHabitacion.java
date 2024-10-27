@@ -54,6 +54,17 @@ public class PEHabitacion {
 
     }
 
+    public static boolean ActualizarDisponibilidad(boolean disponibilidad, int idHabitacion) {
+        Habitacion h = buscarHabitacion(idHabitacion);
+        if(h != null) {
+                String sql = "UPDATE habitaciones SET ocupada=? WHERE idHabitacion=?";
+                ArrayList<Object> parametros = new ArrayList(Arrays.asList(disponibilidad, idHabitacion));
+                return conexion.consulta(sql, parametros);
+        }
+        System.out.println("-ERROR La habitaciones ingresada se encuentra ocupada");
+        return false;
+    }
+
     public static boolean eliminarHabitacion(int pidHabitacion) {
         String sql = "DELETE FROM habitaciones WHERE idHabitacion=?";
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(pidHabitacion));

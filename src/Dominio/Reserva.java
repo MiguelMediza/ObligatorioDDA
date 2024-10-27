@@ -6,6 +6,7 @@ public class Reserva {
     private Habitacion habitacion;
     private int cantidadPersonas;
     private String fechaReserva;
+    private double seniaValor;
     private boolean pagado;
     private String observacion;
 
@@ -49,6 +50,14 @@ public class Reserva {
         this.fechaReserva = fechaReserva;
     }
 
+    public double getSeniaValor() {
+        return seniaValor;
+    }
+
+    public void setSeniaValor(double seniaValor) {
+        this.seniaValor = seniaValor;
+    }
+
     public boolean isPagado() {
         return pagado;
     }
@@ -65,21 +74,23 @@ public class Reserva {
         this.observacion = observacion;
     }
 
-    public Reserva(int idReserva, Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, boolean pagado, String observacion) {
+    public Reserva(int idReserva, Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, double seniaValor, boolean pagado, String observacion) {
         this.idReserva = idReserva;
         this.responsable = responsable;
         this.habitacion = habitacion;
         this.cantidadPersonas = cantidadPersonas;
         this.fechaReserva = fechaReserva;
+        this.seniaValor = seniaValor;
         this.pagado = pagado;
         this.observacion = observacion;
     }
 
-    public Reserva(Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, boolean pagado, String observacion) {
+    public Reserva(Huesped responsable, Habitacion habitacion, int cantidadPersonas, String fechaReserva, double seniaValor, boolean pagado, String observacion) {
         this.responsable = responsable;
         this.habitacion = habitacion;
         this.cantidadPersonas = cantidadPersonas;
         this.fechaReserva = fechaReserva;
+        this.seniaValor = seniaValor;
         this.pagado = pagado;
         this.observacion = observacion;
     }
@@ -87,11 +98,12 @@ public class Reserva {
     @Override
     public String toString() {
         return "Reserva{" +
-                "idReserva='" + idReserva + '\'' +
+                "idReserva=" + idReserva +
                 ", responsable=" + responsable +
                 ", habitacion=" + habitacion +
                 ", cantidadPersonas=" + cantidadPersonas +
                 ", fechaReserva='" + fechaReserva + '\'' +
+                ", seniaValor=" + seniaValor +
                 ", pagado=" + pagado +
                 ", observacion='" + observacion + '\'' +
                 '}';

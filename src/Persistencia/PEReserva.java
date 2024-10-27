@@ -13,12 +13,13 @@ import java.util.List;
 public class PEReserva {
     private static Conexion conexion = new Conexion();
     public static boolean agregarReserva(Reserva r) {
-        String sql = "INSERT INTO reservas(responsable, habitacion, cantidadPersonas, fechaReserva, pagado, observaciones) VALUES(?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reservas(responsable, habitacion, cantidadPersonas, fechaReserva, seniaPago, pagado, observaciones) VALUES(?, ?, ?, ?, ?, ?, ?)";
         ArrayList<Object> parametros = new ArrayList<>(Arrays.asList(
                 r.getHuesped().getIdHuesped(),
                 r.getHabitacion().getIdHabitacion(),
                 r.getCantidadPersonas(),
                 r.getFechaReserva(),
+                r.getSeniaValor(),
                 r.isPagado(),
                 r.getObservacion()
         ));
@@ -26,7 +27,7 @@ public class PEReserva {
     }
 
     public static Reserva buscarReserva(int pidReserva) {
-        String sql = "SELECT idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, pagado, observaciones FROM reservas WHERE idReserva=?";
+        String sql = "SELECT idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, seniaPago, pagado, observaciones FROM reservas WHERE idReserva=?";
 
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(pidReserva));
         Iterator var3 = conexion.seleccion(sql, parametros).iterator();
@@ -37,15 +38,17 @@ public class PEReserva {
             int idHabitacion = (Integer) registro.get(2);
             int cantidadPersonas = (Integer) registro.get(3);
             String fechaReserva = String.valueOf(registro.get(4));
-            boolean pagado = (Boolean) registro.get(5);
-            String observaciones = String.valueOf(registro.get(6));
+            double seniaValor = (Double) registro.get(5);
+            boolean pagado = (Boolean) registro.get(6);
+            String observaciones = String.valueOf(registro.get(7));
 
             Huesped responsable = PEHuesped.buscarHuesped(idResponsable);
             Habitacion habitacion = PEHabitacion.buscarHabitacion(idHabitacion);
-            Reserva unaReserva = new Reserva(idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, pagado, observaciones);
+            Reserva unaReserva = new Reserva(idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, seniaValor, pagado, observaciones);
             return unaReserva;
 
         } else {
+            System.out.println("No se encontro una reserva");
             return null;
         }
     }
@@ -54,6 +57,14 @@ public class PEReserva {
         String sql = "DELETE FROM reservas WHERE idReserva=?";
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(pIdReserva));
         return conexion.consulta(sql, parametros);
+    }
+
+    public static boolean ActualizarPago(int pIdReserva) {
+        String sql = "UPDATE reservas SET pagado=? WHERE idReserva=?";
+        ArrayList<Object> parametros = new ArrayList(Arrays.asList(true, pIdReserva));
+        return conexion.consulta(sql, parametros);
+
+
     }
 
     public static ArrayList<Reserva> listarReservas() {
@@ -69,17 +80,24 @@ public class PEReserva {
             int idHabitacion = (Integer) registro.get(2);
             int cantidadPersonas = (Integer) registro.get(3);
             String fechaReserva = String.valueOf(registro.get(4));
-            boolean pagado = (Boolean) registro.get(5);
-            String observaciones = String.valueOf(registro.get(6));
+            double seniaValor = (Double) registro.get(5);
+            boolean pagado = (Boolean) registro.get(6);
+            String observaciones = String.valueOf(registro.get(7));
 
             Huesped responsable = PEHuesped.buscarHuesped(idResponsable);
             Habitacion habitacion = PEHabitacion.buscarHabitacion(idHabitacion);
 
-            Reservas.add(new Reserva(idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, pagado, observaciones));
+            Reservas.add(new Reserva(idReserva, responsable, habitacion, cantidadPersonas, fechaReserva, seniaValor, pagado, observaciones));
         }
 
         return Reservas;
     }
+
+//    public static void RealizarPago(){
+//        String sql = "UPDATE reservas SET responsable=?, habitacion=?, cantidadPersonas=?, fechaReserva=?, pagado=?, observaciones=? WHERE idReserva=?";
+//        ArrayList<Object> parametros = new ArrayList(Arrays.asList(r.getHuesped(), r.getHabitacion(), r.getCantidadPersonas(), r.getFechaReserva(), r.isPagado(), r.getObservacion()));
+//        return conexion.consulta(sql, parametros);
+//    }
 
     public static boolean modificarReserva(Reserva r) {
         String sql = "UPDATE reservas SET responsable=?, habitacion=?, cantidadPersonas=?, fechaReserva=?, pagado=?, observaciones=? WHERE idReserva=?";

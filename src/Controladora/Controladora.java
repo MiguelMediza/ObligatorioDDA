@@ -8,6 +8,9 @@ package Controladora;
 import Dominio.*;
 import Persistencia.*;
 
+import Utils.AppException;
+import Utils.Utilidades;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -633,10 +636,22 @@ public class Controladora {
         } while (monto == 0);
 
         String fechaVigencia;
+        LocalDate fechaDate=null;
         do {
-            System.out.println("Ingrese la fecha de vigencia");
-            fechaVigencia = escaner.nextLine().trim();
-        } while (fechaVigencia.isEmpty());
+            System.out.println("Fecha de vigencia(YYYY-MM-DD)");
+            fechaVigencia = escaner.nextLine();
+            try{
+                fechaDate = Utilidades.validarFecha(fechaVigencia);
+            }
+            catch(AppException a){
+                fechaDate = null;
+                System.out.println(a.getMessage());
+            }
+            catch (Exception e) {
+                fechaDate = null;
+                System.out.println(e.getMessage());
+            }
+        } while (fechaDate == null);
 
 
         Tarifa nuevaTarifa = new Tarifa(monto, fechaVigencia);
@@ -719,6 +734,10 @@ public class Controladora {
                 if (habitacion == null) {
                     idHabitacion = 0;
                 }
+                if(habitacion.isOcupada()){
+                    idHabitacion = 0;
+                    System.out.println("La habitacion ingresada se encuentra ocupada");
+                }
             } catch (Exception e) {
                 idHabitacion = 0; // Valor por defecto si hay error
             }
@@ -737,13 +756,50 @@ public class Controladora {
         } while(cantPersonas == 0);
 
         String fechaReserva;
+        LocalDate fechaDate=null;
         do {
-            System.out.println("Fecha de reserva");
-            fechaReserva = escaner.nextLine().trim();
-        } while (fechaReserva.isEmpty());
+            System.out.println("Fecha de reserva(YYYY-MM-DD)");
+            fechaReserva = escaner.nextLine();
+            try{
+                fechaDate = Utilidades.validarFecha(fechaReserva);
+            }
+            catch(AppException a){
+                fechaDate = null;
+                System.out.println(a.getMessage());
+            }
+            catch (Exception e) {
+                fechaDate = null;
+                System.out.println(e.getMessage());
+            }
+        } while (fechaDate == null);
 
         //Al crear la reserva se inicializa como sin pagar siempre
         boolean pagado = false;
+
+        int seniaValor=0;
+        Tarifa tarifaActual = PETarifa.buscarTarifa(1);
+        int pagoTotal = (cantPersonas * tarifaActual.getMonto());
+        Double minimoPago = ((cantPersonas * tarifaActual.getMonto()) * 0.2);
+        do {
+            System.out.println("La tarifa actual por persona es: $" + tarifaActual.getMonto());
+            System.out.println("Ingrese valor a pagar de la estadia: ('Minimo pago requerido: ' $"+minimoPago+") Pago total es: $" + pagoTotal + " Si Paga el total de la estadia, se congelara el precio");
+            try {
+                seniaValor = Integer.parseInt(escaner.nextLine().trim());
+                if (seniaValor < minimoPago) {
+                    System.out.println("- ERROR! El valor ingresado es menor al Minimo requerido");
+                    seniaValor=0;
+                }
+                if (seniaValor > pagoTotal) {
+                    System.out.println("- ERROR! El valor ingresado es mayor al pago total de la estadia");
+                    seniaValor=0;
+                }
+                if (seniaValor == pagoTotal) {
+                    pagado = true;
+                }
+            } catch (Exception var7) {
+                seniaValor = 0;
+            }
+        } while(seniaValor == 0);
 
         String observaciones;
         do {
@@ -751,23 +807,36 @@ public class Controladora {
             observaciones = escaner.nextLine().trim();
         } while (observaciones.isEmpty());
 
-        Reserva nuevaReserva = new Reserva(responsable, habitacion, cantPersonas, fechaReserva, pagado, observaciones);
+        Reserva nuevaReserva = new Reserva(responsable, habitacion, cantPersonas, fechaReserva, seniaValor, pagado, observaciones);
         if (PEReserva.agregarReserva(nuevaReserva)) {
-            System.out.println("Se agregó la reserva con exito");
+            if (PEHabitacion.ActualizarDisponibilidad( true, habitacion.getIdHabitacion())){
+                System.out.println("Se actualizo el estado de la habitación con exito");
+            }
+            else{
+                System.out.println("Hubo un error al actualizar el estado de la habitación");
+            }
+            System.out.println("Reserva realizada con exito!");
         } else {
             System.out.println("Hubo un problema para agregar");
         }
     }
+
 
     public void eliminarReserva() {
         System.out.println("Eliminar Reserva");
         Reserva r = this.buscarReserva();
         if (r == null) {
             System.out.println("No se encontró la reserva");
-        } else if (PEReserva.eliminarReserva(r.getIdReserva())) {
-            System.out.println("La reserva se eliminó con éxito");
+        } else if (PEHabitacion.ActualizarDisponibilidad( false, r.getHabitacion().getIdHabitacion())) {
+            if (PEReserva.eliminarReserva(r.getIdReserva())){
+                System.out.println("La reserva se eliminó con éxito");
+            }
+            else{
+                System.out.println("La reserva no se pudo eliminar");
+            }
+            System.out.println("Se actualizo el estado de la habitación con exito");
         } else {
-            System.out.println("La reserva no se pudo eliminar");
+            System.out.println("Hubo un error al actualizar el estado de la habitación");
         }
 
     }
@@ -796,6 +865,316 @@ public class Controladora {
             System.out.println(r.toString());
         }
 
+    }
+
+    public void RealizarPago(){
+        System.out.println("Realizar Pago");
+
+        int idReserva;
+        Reserva reserva = null;
+        do {
+            System.out.println("Ingrese el id de la reserva a pagar");
+            try {
+                idReserva = Integer.parseInt(escaner.nextLine().trim());
+                reserva = PEReserva.buscarReserva(idReserva);
+                if (reserva == null) {
+                    idReserva = 0;
+                }
+                if (reserva.isPagado()){
+                    System.out.println("Esta reserva ya esta completamente pagada");
+                    idReserva=1;
+                }
+                if(!reserva.isPagado()){
+                    Tarifa tarifaActual = PETarifa.buscarTarifa(1);
+                    int cantidadPersonas = reserva.getCantidadPersonas();
+                    int montoTotal = (tarifaActual.getMonto() * cantidadPersonas);
+                    double montoPago = reserva.getSeniaValor();
+                    double restantePagar = (montoTotal - montoPago);
+                    System.out.println("La reserva esta realizada para: " + cantidadPersonas + " personas.");
+                    System.out.println("La tarifa actual es de: $" + tarifaActual.getMonto() + " por persona.");
+                    System.out.println("Seña de: $" + montoPago+ " realizada, le falta pagar $" + restantePagar );
+                    System.out.println("Por favor ingrese: " + restantePagar + " para finalizar el pago!");
+
+                    int opcion = 0;
+                    do{
+                        try{
+                            int montoPagar = Integer.parseInt(escaner.nextLine().trim());
+                            if (montoPagar > restantePagar) {
+                                System.out.println("El monto ingresado es mayor a TOTAL a pagar faltante, vuelva a ingresar!");
+                                opcion = 0;
+                            }
+                            if (montoPagar != restantePagar) {
+                                System.out.println("Debe pagar el total restante!");
+                                opcion=0;
+                            }
+
+                            if(montoPagar == restantePagar){
+                                System.out.println("Pago de la reserva exitoso!");
+                                PEReserva.ActualizarPago(idReserva);
+                                opcion = 1;
+                            }
+
+                        }
+                        catch (Exception var8) {
+                            opcion = 0;
+                        }
+                    }
+                    while (opcion == 0);
+                }
+
+            } catch (Exception e) {
+                idReserva = 0; // Valor por defecto si hay error
+            }
+        } while (idReserva == 0);
+
+
+    }
+
+
+
+    //CONSULTAS
+
+
+    //CONSULTAS DE HOTELES
+    public void ConsultaDeHoteles(){
+        System.out.println("Consulta Hoteles");
+        System.out.println("1. Por ciudad");
+        System.out.println("2. Por nombre");
+        System.out.println("3. Cantidad de estrellas");
+        System.out.println("4. Salir");
+        int opcion=0;
+        opcion = Integer.parseInt(escaner.nextLine().trim());
+        do {
+           switch(opcion){
+               case 1:
+                   System.out.println("Listado de Hoteles por ciudad");
+                   System.out.println("Ingrese la ciudad del hotel [ Vacio para salir ]");
+                   String ciudad = escaner.nextLine().trim();
+                   if (ciudad.isEmpty()) {
+                       opcion = 4;
+                       break;
+                   }
+                   System.out.println("----------------------------");
+                   System.out.println("Listado de Hoteles en " + ciudad);
+                   System.out.println(listarHotelesPorCiudad(ciudad));
+                   break;
+               case 2:
+                   System.out.println("Listado de Hoteles por nombre");
+                   System.out.println("Ingrese la nombre del hotel [ Vacio para salir ]");
+                   String nombre = escaner.nextLine().trim();
+                   if (nombre.isEmpty()) {
+                       opcion = 4;
+                       break;
+                   }
+                   System.out.println("----------------------------");
+                   System.out.println("Listado de Hoteles llamados: " + nombre);
+                   System.out.println(listarHotelesPorNombre(nombre));
+                   break;
+               case 3:
+                   System.out.println("Listado de Hoteles por Cantidad de estrellas");
+                   System.out.println("Ingrese la cantidad de estrellas del hotel [ Vacio para salir ]");
+                   int cantidad = Integer.parseInt(escaner.nextLine().trim());
+                   if (cantidad <= 0) {
+                       opcion = 4;
+                       break;
+                   }
+                   System.out.println("----------------------------");
+                   System.out.println("Listado de Hoteles con: " + cantidad + " de estrellas");
+                   System.out.println(listarHotelesPorCantidadEstrellas(cantidad));
+                   break;
+
+                   default:
+                       System.out.println("Opcion no valida");
+                       opcion = 4;
+                       break;
+           }
+        }
+        while (opcion != 4);
+    }
+
+    public static ArrayList<Hotel> listarHotelesPorCiudad(String ciudadBuscada) {
+        ArrayList<Hotel> todosLosHoteles = PEHotel.listarHoteles();
+        ArrayList<Hotel> hotelesFiltrados = new ArrayList<>();
+
+        // Filtrar hoteles que están en la ciudad especificada
+        for (Hotel hotel : todosLosHoteles) {
+            if (hotel.getCiudad().equalsIgnoreCase(ciudadBuscada)) {
+                hotelesFiltrados.add(hotel);
+            }
+        }
+        if(hotelesFiltrados.isEmpty()){
+            System.out.println("No existen hoteles agregados en: " + ciudadBuscada);
+            return null;
+        }
+        return hotelesFiltrados;
+    }
+
+    public static ArrayList<Hotel> listarHotelesPorNombre(String nombre) {
+        ArrayList<Hotel> todosLosHoteles = PEHotel.listarHoteles();
+        ArrayList<Hotel> hotelesFiltrados = new ArrayList<>();
+
+        // Filtrar hoteles por nombre
+        for (Hotel hotel : todosLosHoteles) {
+            if (hotel.getNombre().equalsIgnoreCase(nombre)) {
+                hotelesFiltrados.add(hotel);
+            }
+        }
+        if(hotelesFiltrados.isEmpty()){
+            System.out.println("No existen hoteles con el nombre: " + nombre);
+            return null;
+        }
+
+        return hotelesFiltrados;
+    }
+
+    public static ArrayList<Hotel> listarHotelesPorCantidadEstrellas(int cantidadEstrellas) {
+        ArrayList<Hotel> todosLosHoteles = PEHotel.listarHoteles();
+        ArrayList<Hotel> hotelesFiltrados = new ArrayList<>();
+
+        // Filtrar hoteles que están en la ciudad especificada
+        for (Hotel hotel : todosLosHoteles) {
+            if (hotel.getCantidadEstrellas() == (cantidadEstrellas)) {
+                hotelesFiltrados.add(hotel);
+            }
+        }
+        if(hotelesFiltrados.isEmpty()){
+            System.out.println("No existen hoteles agregados con: " + cantidadEstrellas + " estrellas");
+            return null;
+        }
+
+        return hotelesFiltrados;
+    }
+
+
+    //CONSULTAS DE RESERVAS POR RANGO DE FECHAS
+    public static ArrayList<Reserva> listarReservasEnRangoFechas() {
+        ArrayList<Reserva> todasLasReservas = PEReserva.listarReservas();
+        ArrayList<Reserva> reservasFiltradas = new ArrayList<>();
+
+        String fecha1;
+        LocalDate fechaDate=null;
+        do {
+            System.out.println("Ingrese la primera fecha(YYYY-MM-DD)");
+            fecha1 = escaner.nextLine();
+            try{
+                fechaDate = Utilidades.validarFechaSinRestriccion(fecha1);
+            }
+            catch(AppException a){
+                fechaDate = null;
+                System.out.println(a.getMessage());
+            }
+            catch (Exception e) {
+                fechaDate = null;
+                System.out.println(e.getMessage());
+            }
+        } while (fechaDate == null);
+
+        String fecha2;
+        LocalDate fechaDate2=null;
+        do {
+            System.out.println("Ingrese la segunda fecha(YYYY-MM-DD)");
+            fecha2 = escaner.nextLine();
+            try{
+                fechaDate2 = Utilidades.validarFechaSinRestriccion(fecha2);
+            }
+            catch(AppException a){
+                fechaDate2 = null;
+                System.out.println(a.getMessage());
+            }
+            catch (Exception e) {
+                fechaDate2 = null;
+                System.out.println(e.getMessage());
+            }
+        } while (fechaDate2 == null);
+
+        // Filtrar reservas por rango de fechas
+        for (Reserva reserva : todasLasReservas) {
+            LocalDate comodin = null;
+            try{
+                comodin = Utilidades.validarFechaSinRestriccion(reserva.getFechaReserva());
+            }
+            catch(AppException a){
+                comodin = null;
+                System.out.println(a.getMessage());
+            }
+
+            if (fechaDate.isBefore(comodin) && fechaDate2.isAfter(comodin)) {
+                reservasFiltradas.add(reserva);
+            }
+        }
+        if(reservasFiltradas.isEmpty()){
+            System.out.println("No existen reservas agregadas entre: " + fecha1 + "," + fechaDate2);
+            return null;
+        }
+        return reservasFiltradas;
+    }
+
+
+    //Filtrar habitaciones con reserva y sin reserva
+
+    public void ConsultaDeHabitaciones(){
+        System.out.println("Consulta Habitaciones");
+        System.out.println("1. Con Reservas");
+        System.out.println("2. Sin Reservas");
+        System.out.println("3. Salir");
+        int opcion=0;
+        opcion = Integer.parseInt(escaner.nextLine().trim());
+        do {
+            switch(opcion){
+                case 1:
+                    System.out.println("Listado de habitaciones con reservas");
+                    System.out.println(listarHabitacionesConReserva());
+                    opcion = 0;
+                    break;
+                case 2:
+                    System.out.println("Listado de habitaciones sin reservas");
+                    System.out.println(listarHabitacionesSinReserva());
+                    opcion = 0;
+                    break;
+                case 3:
+                    opcion = 0;
+                    break;
+
+                default:
+                    System.out.println("Opcion no valida");
+                    opcion = 0;
+                    break;
+            }
+        }
+        while (opcion != 0);
+    }
+
+    public static ArrayList<Habitacion> listarHabitacionesConReserva() {
+        ArrayList<Habitacion> todasHabitaciones = PEHabitacion.listarHabitaciones();
+        ArrayList<Habitacion> habitacionesFiltradas = new ArrayList<>();
+
+        for (Habitacion habitacion : todasHabitaciones) {
+            if (habitacion.isOcupada() == true) {
+                habitacionesFiltradas.add(habitacion);
+            }
+        }
+        if(habitacionesFiltradas.isEmpty()){
+            System.out.println("No existen habitaciones con reservas");
+            return null;
+        }
+        return habitacionesFiltradas;
+    }
+
+    public static ArrayList<Habitacion> listarHabitacionesSinReserva() {
+        ArrayList<Habitacion> todasHabitaciones = PEHabitacion.listarHabitaciones();
+        ArrayList<Habitacion> habitacionesFiltradas = new ArrayList<>();
+
+        for (Habitacion habitacion : todasHabitaciones) {
+            if (!habitacion.isOcupada()) {
+                habitacionesFiltradas.add(habitacion);
+            }
+        }
+        if(habitacionesFiltradas.isEmpty()){
+            System.out.println("No existen habitaciones sin reservas");
+            return null;
+        }
+
+        return habitacionesFiltradas;
     }
 
     static {
