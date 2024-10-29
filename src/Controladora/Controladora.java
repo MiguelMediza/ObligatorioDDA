@@ -63,10 +63,22 @@ public class Controladora {
         } while(numDocumento == 0);
 
         String fechaNacimiento;
+        LocalDate fechaDate2=null;
         do {
-            System.out.println("Ingrese la fecha de nacimiento del Huesped");
-            fechaNacimiento = escaner.nextLine().trim();
-        } while(fechaNacimiento.isEmpty());
+            System.out.println("Fecha de nacimiento(YYYY-MM-DD)");
+            fechaNacimiento = escaner.nextLine();
+            try{
+                fechaDate2 = Utilidades.validarFechaMayor18(fechaNacimiento);
+            }
+            catch(AppException a){
+                fechaDate2 = null;
+                System.out.println(a.getMessage());
+            }
+            catch (Exception e) {
+                fechaDate2 = null;
+                System.out.println(e.getMessage());
+            }
+        } while (fechaDate2 == null);
 
         String telefono;
         do {
@@ -80,7 +92,7 @@ public class Controladora {
             pais = escaner.nextLine().trim();
         } while(pais.isEmpty());
 
-        Huesped e = new Huesped(nombre, aPaterno, aMaterno, tipoDocumento, numDocumento, fechaNacimiento, telefono, pais);
+        Huesped e = new Huesped(nombre, aPaterno, aMaterno, tipoDocumento, numDocumento, fechaDate2, telefono, pais);
         if (PEHuesped.agregarHuesped(e)) {
             System.out.println("Se agregó el Huesped con éxito");
         } else {
@@ -152,11 +164,30 @@ public class Controladora {
 
             }
 
-            System.out.println("Ingrese fecha de nacimiento (" + e.getFecha_nacimiento() + ")");
-            String fechaNacimiento = escaner.nextLine().trim();
-            if (!fechaNacimiento.isEmpty()) {
-                e.setFecha_nacimiento(fechaNacimiento);
-            }
+            String fechaNacimiento;
+            LocalDate fechaDate2=null;
+            do {
+                System.out.println("Fecha de nacimiento(YYYY-MM-DD)");
+                fechaNacimiento = escaner.nextLine();
+                try{
+                    fechaDate2 = Utilidades.validarFechaMayor18(fechaNacimiento);
+                    e.setFecha_nacimiento(fechaDate2);
+                }
+                catch(AppException a){
+                    fechaDate2 = null;
+                    System.out.println(a.getMessage());
+                }
+                catch (Exception ex) {
+                    fechaDate2 = null;
+                    System.out.println(ex.getMessage());
+                }
+            } while (fechaDate2 == null);
+
+//            System.out.println("Ingrese fecha de nacimiento (" + e.getFecha_nacimiento() + ")");
+//            String fechaNacimiento = escaner.nextLine().trim();
+//            if (!fechaNacimiento.isEmpty()) {
+//                e.setFecha_nacimiento(fechaNacimiento);
+//            }
 
             System.out.println("Ingrese el teléfono (" + e.getTelefono() + ")");
             String telefono = escaner.nextLine().trim();

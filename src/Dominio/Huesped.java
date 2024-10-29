@@ -1,5 +1,7 @@
 package Dominio;
 
+import java.time.LocalDate;
+
 public class Huesped {
     private int idHuesped;
     private String nombre;
@@ -7,7 +9,7 @@ public class Huesped {
     private String aMaterno;
     private String tipo_documento;
     private int num_documento;
-    private String fecha_nacimiento;
+    private LocalDate fecha_nacimiento;
     private String telefono;
     private String pais;
 
@@ -59,11 +61,11 @@ public class Huesped {
         this.num_documento = num_documento;
     }
 
-    public String getFecha_nacimiento() {
+    public LocalDate getFecha_nacimiento() {
         return fecha_nacimiento;
     }
 
-    public void setFecha_nacimiento(String fecha_nacimiento) {
+    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
         this.fecha_nacimiento = fecha_nacimiento;
     }
 
@@ -83,7 +85,7 @@ public class Huesped {
         this.pais = pais;
     }
 
-    public Huesped(int idHuesped, String nombre, String aPaterno, String aMaterno, String tipo_documento, int num_documento, String fecha_nacimiento, String telefono, String pais) {
+    public Huesped(int idHuesped, String nombre, String aPaterno, String aMaterno, String tipo_documento, int num_documento, LocalDate fecha_nacimiento, String telefono, String pais) {
         this.idHuesped = idHuesped;
         this.nombre = nombre;
         this.aPaterno = aPaterno;
@@ -94,7 +96,7 @@ public class Huesped {
         this.telefono = telefono;
         this.pais = pais;
     }
-    public Huesped(String nombre, String aPaterno, String aMaterno, String tipo_documento, int num_documento, String fecha_nacimiento, String telefono, String pais) {
+    public Huesped(String nombre, String aPaterno, String aMaterno, String tipo_documento, int num_documento, LocalDate fecha_nacimiento, String telefono, String pais) {
         this.nombre = nombre;
         this.aPaterno = aPaterno;
         this.aMaterno = aMaterno;
