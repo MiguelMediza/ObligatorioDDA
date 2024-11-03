@@ -1,9 +1,11 @@
 package Dominio;
 
+import java.time.LocalDate;
+
 public class Tarifa {
     private int id;
     private int monto;
-    private String fechaVigencia;
+    private LocalDate fechaVigencia;
 
     public int getId() {
         return id;
@@ -21,21 +23,21 @@ public class Tarifa {
         this.monto = monto;
     }
 
-    public String getFechaVigencia() {
+    public LocalDate getFechaVigencia() {
         return fechaVigencia;
     }
 
-    public void setFechaVigencia(String fechaVigencia) {
+    public void setFechaVigencia(LocalDate fechaVigencia) {
         this.fechaVigencia = fechaVigencia;
     }
 
-    public Tarifa(int id, int monto, String fechaVigencia) {
+    public Tarifa(int id, int monto, LocalDate fechaVigencia) {
         this.id = id;
         this.monto = monto;
         this.fechaVigencia = fechaVigencia;
     }
 
-    public Tarifa(int monto, String fechaVigencia) {
+    public Tarifa(int monto, LocalDate fechaVigencia) {
         this.monto = monto;
         this.fechaVigencia = fechaVigencia;
     }

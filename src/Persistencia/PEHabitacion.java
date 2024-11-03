@@ -83,7 +83,6 @@ public class PEHabitacion {
                 ArrayList<Object> parametros = new ArrayList(Arrays.asList(disponibilidad, idHabitacion));
             try {
                 if (conexion.consulta(sql, parametros)) {
-                    System.out.println("Se actualizo el estado de la habitación correctamente!");
                     return true;
                 } else {
                     System.out.println("Existió un problema al actualizar el estado de la habitación");

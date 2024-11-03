@@ -672,7 +672,7 @@ public class Controladora {
             System.out.println("Fecha de vigencia(YYYY-MM-DD)");
             fechaVigencia = escaner.nextLine();
             try{
-                fechaDate = Utilidades.validarFecha(fechaVigencia);
+                fechaDate = Utilidades.validarFechaTarifa2(fechaVigencia);
             }
             catch(AppException a){
                 fechaDate = null;
@@ -685,12 +685,19 @@ public class Controladora {
         } while (fechaDate == null);
 
 
-        Tarifa nuevaTarifa = new Tarifa(monto, fechaVigencia);
+        Tarifa nuevaTarifa = new Tarifa(monto, fechaDate);
         if (PETarifa.agregarTarifa(nuevaTarifa)) {
             System.out.println("Se agregó la tarifa con exito");
         } else {
             System.out.println("Hubo un problema para agregar");
         }
+    }
+
+    public static boolean buscarUltimaTarifa() {
+        if(PETarifa.buscarUltimaTarifa() != null){
+            return true;
+        }
+        return false;
     }
 
     public void eliminarTarifa() {
@@ -808,11 +815,17 @@ public class Controladora {
         boolean pagado = false;
 
         int seniaValor=0;
-        Tarifa tarifaActual = PETarifa.buscarTarifa(1);
-        int pagoTotal = (cantPersonas * tarifaActual.getMonto());
-        Double minimoPago = ((cantPersonas * tarifaActual.getMonto()) * 0.2);
+//        Tarifa tarifaActual = PETarifa.buscarTarifa(1);
+        double montoTarifaActual=0;
+        if(PETarifa.buscarUltimaTarifa() == null){
+            System.out.println("ERROR: No hay ninguna tarifa agregada!");
+        }
+        montoTarifaActual = PETarifa.buscarUltimaTarifa().getMonto();
+        Double pagoTotal = (cantPersonas * montoTarifaActual);
+        Double minimoPago = ((cantPersonas * montoTarifaActual) * 0.2);
         do {
-            System.out.println("La tarifa actual por persona es: $" + tarifaActual.getMonto());
+
+            System.out.println("La tarifa actual por persona es: $" + montoTarifaActual);
             System.out.println("Ingrese valor a pagar de la estadia: ('Minimo pago requerido: ' $"+minimoPago+") Pago total es: $" + pagoTotal + " Si Paga el total de la estadia, se congelara el precio");
             try {
                 seniaValor = Integer.parseInt(escaner.nextLine().trim());
@@ -916,13 +929,16 @@ public class Controladora {
                     idReserva=1;
                 }
                 if(!reserva.isPagado()){
-                    Tarifa tarifaActual = PETarifa.buscarTarifa(1);
+                    double montoTarifaActual=0;
+                    if(PETarifa.buscarUltimaTarifa() != null){
+                        montoTarifaActual = PETarifa.buscarUltimaTarifa().getMonto();
+                    }
                     int cantidadPersonas = reserva.getCantidadPersonas();
-                    int montoTotal = (tarifaActual.getMonto() * cantidadPersonas);
+                    Double montoTotal = (montoTarifaActual * cantidadPersonas);
                     double montoPago = reserva.getSeniaValor();
                     double restantePagar = (montoTotal - montoPago);
                     System.out.println("La reserva esta realizada para: " + cantidadPersonas + " personas.");
-                    System.out.println("La tarifa actual es de: $" + tarifaActual.getMonto() + " por persona.");
+                    System.out.println("La tarifa actual es de: $" + montoTarifaActual + " por persona.");
                     System.out.println("Seña de: $" + montoPago+ " realizada, le falta pagar $" + restantePagar );
                     System.out.println("Por favor ingrese: " + restantePagar + " para finalizar el pago!");
 

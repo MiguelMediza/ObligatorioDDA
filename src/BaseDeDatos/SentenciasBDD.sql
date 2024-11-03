@@ -13,6 +13,7 @@ create table huespedes(
     telefono varchar(20),
     pais varchar(50));
     
+    select * from huespedes
     
 create table hoteles (
     idHotel int(3) auto_increment primary key,
@@ -28,7 +29,11 @@ create table hoteles (
 create table tarifas(
 idTarifa int auto_increment primary key,
 monto int not null,
-fechaVigencia varchar(50));
+fechaVigencia DATE);
+
+select * from tarifas
+
+ALTER TABLE tarifas MODIFY COLUMN fechaVigencia DATE;
 
 create table habitaciones (
     idHabitacion int(3) auto_increment primary key,

@@ -79,7 +79,6 @@ public class PEReserva {
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(pIdReserva));
         try {
             if (conexion.consulta(sql, parametros)) {
-                System.out.println("Se eliminó la reserva con éxito");
                 return true;
             } else {
                 System.out.println("Existió un problema al eliminar la reserva");
