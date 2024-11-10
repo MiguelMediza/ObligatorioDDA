@@ -167,20 +167,26 @@ public class Controladora {
             String fechaNacimiento;
             LocalDate fechaDate2=null;
             do {
-                System.out.println("Fecha de nacimiento(YYYY-MM-DD)");
+                System.out.println("Fecha de nacimiento(YYYY-MM-DD) -> " + e.getFecha_nacimiento());
                 fechaNacimiento = escaner.nextLine();
-                try{
-                    fechaDate2 = Utilidades.validarFechaMayor18(fechaNacimiento);
-                    e.setFecha_nacimiento(fechaDate2);
+                if(!fechaNacimiento.isEmpty()){
+                    try{
+                        fechaDate2 = Utilidades.validarFechaMayor18(fechaNacimiento);
+                        e.setFecha_nacimiento(fechaDate2);
+                    }
+                    catch(AppException a){
+                        fechaDate2 = null;
+                        System.out.println(a.getMessage());
+                    }
+                    catch (Exception ex) {
+                        fechaDate2 = null;
+                        System.out.println(ex.getMessage());
+                    }
                 }
-                catch(AppException a){
-                    fechaDate2 = null;
-                    System.out.println(a.getMessage());
+                else{
+                    fechaDate2 = e.getFecha_nacimiento();
                 }
-                catch (Exception ex) {
-                    fechaDate2 = null;
-                    System.out.println(ex.getMessage());
-                }
+
             } while (fechaDate2 == null);
 
 //            System.out.println("Ingrese fecha de nacimiento (" + e.getFecha_nacimiento() + ")");

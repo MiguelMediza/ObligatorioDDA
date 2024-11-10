@@ -23,7 +23,6 @@ public class PEHuesped {
         ArrayList<Object> parametros = new ArrayList(Arrays.asList(e.getNombre(), e.getaPaterno(), e.getaMaterno(), e.getTipo_documento(), e.getNum_documento(), e.getFecha_nacimiento(), e.getTelefono(), e.getPais()));
         try {
             if (conexion.consulta(sql,parametros)){
-                System.out.println("Se agrego el huesped con exito");
                 return true;
             }
             else {
@@ -156,7 +155,9 @@ public class PEHuesped {
                 String pais = String.valueOf(registro.get(8));
                 Huespedes.add(new Huesped(idHuesped,nombre, aPaterno, aMaterno, tipoDocumento, numDocumento, fechaNacimiento, telefono, pais));
             }
-
+            if(Huespedes.isEmpty()) {
+                System.out.println(" # No hay huespedes agregados! # ");
+            }
             return Huespedes;
         } catch (AppSQLException var11) {
             AppSQLException e = var11;
