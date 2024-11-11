@@ -24,7 +24,6 @@ public class PEHotel {
         ));
         try {
             if (conexion.consulta(sql,parametros)){
-                System.out.println("Se agrego el hotel con exito");
                 return true;
             }
             else {

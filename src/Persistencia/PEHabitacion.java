@@ -27,7 +27,6 @@ public class PEHabitacion {
 
         try {
             if (conexion.consulta(sql,parametros)){
-                System.out.println("Se agrego la habitación con exito");
                 return true;
             }
             else {

@@ -26,7 +26,6 @@ public class PEReserva {
         ));
         try {
             if (conexion.consulta(sql,parametros)){
-                System.out.println("Se agrego la reserva con exito");
                 return true;
             }
             else {
